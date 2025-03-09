@@ -2,7 +2,7 @@ namespace BasicMvvmSample.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public SimpleViewModel SimpleViewModel { get; } = new SimpleViewModel();
-
+        public DictionaryViewModel DictionaryViewModel { get; } = new DictionaryViewModel();
     }
 }
+
