@@ -19,7 +19,7 @@ namespace BasicMvvmSample.Models
             if (key is null) 
                 throw new ArgumentNullException(nameof(key), "Key cannot be null.");
 
-            if (_items.Any(pair => pair.Key is not null && EqualityComparer<TKey>.Default.Equals(pair.Key, key)))
+            if (ContainsKey(key))
                 throw new ArgumentException("Key already exists.");
 
             _items.Add(new KeyValuePair<TKey, TValue>(key, value));
