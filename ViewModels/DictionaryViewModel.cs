@@ -65,6 +65,7 @@ namespace BasicMvvmSample.ViewModels
             RemoveCommand = new RelayCommand(RemoveKey);
             ClearCommand = new RelayCommand(ClearDictionary);
             SearchCommand = new RelayCommand(SearchKey);
+            UpdateOutput();
         }
 
         private void AddKeyValuePair()
@@ -78,6 +79,8 @@ namespace BasicMvvmSample.ViewModels
             {
                 DictionaryOutput = $"Error: {ex.Message}";
             }
+            
+            UpdateOutput();
         }
 
         private void RemoveKey()
@@ -109,6 +112,7 @@ namespace BasicMvvmSample.ViewModels
             {
                 SearchResult = "Key not found!";
             }
+            UpdateOutput();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
