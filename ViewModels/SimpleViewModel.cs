@@ -1,20 +1,14 @@
-using Avalonia.Controls;
-using Avalonia.Interactivity;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Tmds.DBus.Protocol;
-using WindowsFormsApp1;
 
 namespace BasicMvvmSample.ViewModels
 {
-
     public class SimpleViewModel : INotifyPropertyChanged
     {
-        workList<int> myList = new workList<int>();
-
+        private workList<int> myList = new workList<int>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -23,42 +17,26 @@ namespace BasicMvvmSample.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // ---- Add some Properties ----
-
-        private string? _ValueData; // This is our backing field for Name
-   
+        private string? _ValueData;
 
         public string? ValueData
         {
-            get 
-            {
-                return _ValueData; 
-            }
+            get => _ValueData;
             set
             {
-                // We only want to update the UI if the Name actually changed, so we check if the value is actually new
                 if (_ValueData != value)
                 {
-                    // 1. update our backing field
                     _ValueData = value;
-
                     RaisePropertyChanged();
                     RaisePropertyChanged(nameof(Greeting));
                 }
             }
         }
-       
 
-        // Greeting will change based on a Name.
-        public string Greeting
-        {
-            get
-            {
-                return "Show List :" + myList.Print();
-            }
-        }
+        public string Greeting => "Show List: " + myList.Print();
 
         public ICommand addButtonClickCommand { get; }
+        public ICommand delButtonClickCommand { get; }
 
         public SimpleViewModel()
         {
@@ -68,43 +46,40 @@ namespace BasicMvvmSample.ViewModels
 
         private void addOnButtonClick()
         {
-            int x = Int32.Parse(_ValueData);
-            myList.Add(x);
-            RaisePropertyChanged();
-            RaisePropertyChanged(nameof(Greeting));
+            if (int.TryParse(_ValueData, out int x))
+            {
+                myList.Add(x);
+                RaisePropertyChanged(nameof(Greeting));
+            }
         }
-
-        public ICommand delButtonClickCommand { get; }
 
         private void delOnButtonClick()
         {
-            int x = Int32.Parse(_ValueData);
-            myList.Remove(x);
-            RaisePropertyChanged();
-            RaisePropertyChanged(nameof(Greeting));
+            if (int.TryParse(_ValueData, out int x))
+            {
+                myList.Remove(x);
+                RaisePropertyChanged(nameof(Greeting));
+            }
         }
+    }
 
+    public class workList<T>
+    {
+        private List<T> items = new List<T>();
 
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public void Add(T item) => items.Add(item);
+        public void Remove(T item) => items.Remove(item);
+        public string Print() => string.Join(", ", items);
     }
 
     public class RelayCommand : ICommand
     {
         private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
 
-        public RelayCommand(Action execute, Func<bool> canExecute = null)
-        {
-            _execute = execute;
-            _canExecute = canExecute;
-        }
+        public RelayCommand(Action execute) => _execute = execute;
 
-        public bool CanExecute(object parameter) => _canExecute?.Invoke() ?? true;
+        public bool CanExecute(object parameter) => true;
         public void Execute(object parameter) => _execute();
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
     }
-
 }
